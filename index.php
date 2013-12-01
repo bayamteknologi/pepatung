@@ -1,19 +1,30 @@
 <?php
 
-// Pepatung Framework
+/*
+ *
+ *  Pepatung PHP Framework
+ *
+ *  Proudly coded by @akifrabbani
+ *  I love PHP <3
+ *
+ */
 
-	// include modules
-	include "modules.php";
+// include the main file of Pepatung Framework
+include "modules.php";
 
-	$pepatung = new pepatung;
+// initialize the class!
+$pepatung = new pepatung;
 
-	$pepatung->setTemplate("main");
+// select default site template
+$pepatung->setTemplate('main');
 
+// set page title
+$pepatung->pageTitle('Welcome to Pepatung!');
 
-	$pepatung->p('This is an example index built using Pepatung Framework.');
+// display message
+$pepatung->p('<h4>Proudly powered by Pepatung.</h4>');
 
-	// display output
-
-	echo $pepatung->output();
+// output the output
+echo $pepatung->output();
 
 ?>
