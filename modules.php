@@ -301,6 +301,7 @@ class pepatung {
             return ($_SESSION["_main_".CURRENT_SYSTEM_HASH."_pageTitle"]);
         } else {
             $_SESSION["_main_".CURRENT_SYSTEM_HASH."_pageTitle"] = $text;
+            return $text;
         }
     }
 
