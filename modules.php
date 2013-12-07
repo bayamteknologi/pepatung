@@ -402,9 +402,9 @@ class pepatung {
             header("Refresh: $time; url=$url");
             exit();
         } else {
-            echo '
+            $this->p('
             <script>setTimeout(function () {window.location.href = "'.$url.'";},'.$time.');var x=setTimeout();</script>
-            <meta http-equiv="Refresh" content="'.$time.'; url='.$url.'">';
+            <meta http-equiv="Refresh" content="'.$time.'; url='.$url.'">');
             exit();
         }
     }
@@ -431,7 +431,43 @@ class pepatung {
         } else {
             return false;
         }
+    }
+    
+    function ip() {
+        // With CloudFlare reverse IP support
+        if (!empty($_SERVER['HTTP_CLIENT_IP']))  {
+        //check ip from share internet
+            $ip=$_SERVER['HTTP_CLIENT_IP'];
+        } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+        //to check ip is pass from proxy
+            $ip=$_SERVER['HTTP_X_FORWARDED_FOR'];
+        } elseif (isset($_SERVER["HTTP_CF_CONNECTING_IP"])) {
+            $ip=$_SERVER["HTTP_CF_CONNECTING_IP"];
+        } else {
+            $ip=$_SERVER['REMOTE_ADDR'];
+        }
+        return $ip;
+    }
 
+    function time_lapse($date1, $date2, $return_as_array = false) {
+        $tempoh = '';
+
+        $diff = abs(strtotime($date2) - strtotime($date1));
+
+        $years = floor($diff / (365*60*60*24));
+        $months = floor(($diff - $years * 365*60*60*24) / (30*60*60*24));
+        $days = floor(($diff - $years * 365*60*60*24 - $months*30*60*60*24)/ (60*60*24));
+
+        $tempoh .= $days.' days';
+
+        if ($months) $tempoh = $months.' months '.$tempoh;
+        if ($years) $tempoh = $years.' years '.$tempoh;
+
+        if (!$return_as_array) {
+            return $tempoh;
+        } else {
+            return array('years' => $years, 'months' => $months, 'days' => $days, 'explain' => $tempoh);
+        }
     }
 }
 ?>
