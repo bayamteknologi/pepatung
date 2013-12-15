@@ -469,5 +469,13 @@ class pepatung {
             return array('years' => $years, 'months' => $months, 'days' => $days, 'explain' => $tempoh);
         }
     }
+
+    function is_number($var) {
+        if (preg_match('/^[0-9]+(\.[0-9]+)?$/', $var)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }
 ?>
