@@ -11,8 +11,6 @@
     <!-- Le styles -->
     <link href="<?php echo $this->call("themepath")."/".$this->call("theme"); ?>/css/bootstrap.min.css" rel="stylesheet">
 
-    <link href="<?php echo $this->call("themepath")."/".$this->call("theme"); ?>/css/bootstrap-theme.min.css" rel="stylesheet">
-
   </head>
 
   <body>
