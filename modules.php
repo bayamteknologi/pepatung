@@ -394,18 +394,26 @@ class pepatung {
   
     }
 
-    function redirect ($url,$time = 0) {
+    function redirect ($url,$time = 0, $parent_redirect = false) {
 
-        if (isset($_SESSION["_main_".CURRENT_SYSTEM_HASH."_template"])) unset ($_SESSION["_main_".CURRENT_SYSTEM_HASH."_template"]);
- 
-        if (!headers_sent()) {
-            header("Refresh: $time; url=$url");
+        if ($parent_redirect) {
+
+            echo '<script>setTimeout(function () {window.top.location.href = "'.$url.'";},'.$time.');var x=setTimeout();</script>
+            <meta http-equiv="Refresh" content="'.$time.'; url='.$url.'">';
             exit();
+            
         } else {
-            $this->p('
-            <script>setTimeout(function () {window.location.href = "'.$url.'";},'.$time.');var x=setTimeout();</script>
-            <meta http-equiv="Refresh" content="'.$time.'; url='.$url.'">');
-            exit();
+            if (isset($_SESSION["_main_".CURRENT_SYSTEM_HASH."_template"])) unset ($_SESSION["_main_".CURRENT_SYSTEM_HASH."_template"]);
+     
+            if (!headers_sent()) {
+                header("Refresh: $time; url=$url");
+                exit();
+            } else {
+                $this->p('
+                <script>setTimeout(function () {window.location.href = "'.$url.'";},'.$time.');var x=setTimeout();</script>
+                <meta http-equiv="Refresh" content="'.$time.'; url='.$url.'">');
+                exit();
+            }
         }
     }
     
@@ -476,6 +484,10 @@ class pepatung {
         } else {
             return false;
         }
+    }
+
+    function string_time($var) {
+        return strtotime(str_replace('/', '-',$var));
     }
 }
 ?>
