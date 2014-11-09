@@ -446,7 +446,7 @@ class pepatung {
         }
     }
     
-    function ip($server_r) {
+    function ip() {
       $ip = '';
       $cdn = array(
         'HTTP_CF_CONNECTING_IP','HTTP_INCAP_CLIENT_IP','HTTP_X_FORWARDED_FOR',
