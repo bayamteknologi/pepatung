@@ -9,7 +9,7 @@
     <meta name="author" content="">
     <link rel="shortcut icon" href="../../assets/ico/favicon.png">
 
-    <title>Signin Template for Bootstrap</title>
+    <title><?php echo $this->pageTitle(); ?></title>
 
     <!-- Bootstrap core CSS -->
     <link href="<?php echo $this->call("themepath")."/".$this->call("theme"); ?>/css/bootstrap.min.css" rel="stylesheet">

@@ -9,7 +9,7 @@
     <meta name="author" content="">
 
     <!-- Le styles -->
-    <link href="<?php echo $this->call("themepath")."/".$this->call("theme"); ?>/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/<?php echo $this->call("themepath")."/".$this->call("theme"); ?>/css/bootstrap.min.css" rel="stylesheet">
 
   </head>
 

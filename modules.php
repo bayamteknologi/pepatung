@@ -9,8 +9,12 @@
  *
  */
 
-    
-if (!isset($_SESSION)) session_start();
+if (function_exists('session_status')) {
+   if (session_status() === PHP_SESSION_NONE) @session_start(); 
+} else {
+    if (!isset($_SESSION)) session_start();
+}
+
 
 // include settings
 // WARNING: If you don't want to override default settings,
@@ -176,6 +180,7 @@ class pepatung {
          */
 
         if (class_exists("Memcache")) {
+            $memcache = new memcache;
             // of course we want the Memcache class to exists :v
             if ($memcache->connect($host, $port)) {
                 if ($cache = $memcache->get(md5($query))) {
@@ -441,20 +446,21 @@ class pepatung {
         }
     }
     
-    function ip() {
-        // With CloudFlare reverse IP support
-        if (!empty($_SERVER['HTTP_CLIENT_IP']))  {
-        //check ip from share internet
-            $ip=$_SERVER['HTTP_CLIENT_IP'];
-        } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-        //to check ip is pass from proxy
-            $ip=$_SERVER['HTTP_X_FORWARDED_FOR'];
-        } elseif (isset($_SERVER["HTTP_CF_CONNECTING_IP"])) {
-            $ip=$_SERVER["HTTP_CF_CONNECTING_IP"];
-        } else {
-            $ip=$_SERVER['REMOTE_ADDR'];
+    function ip($server_r) {
+      $ip = '';
+      $cdn = array(
+        'HTTP_CF_CONNECTING_IP','HTTP_INCAP_CLIENT_IP','HTTP_X_FORWARDED_FOR',
+        'HTTP_TRUE_CLIENT_IP','HTTP_CLIENT_IP','HTTP_X_FORWARDED_FOR',
+        'HTTP_X_FORWARDED','HTTP_X_CLUSTER_CLIENT_IP','HTTP_FORWARDED_FOR',
+        'HTTP_FORWARDED','REMOTE_ADDR'
+      );
+      foreach ($cdn as $server) {
+        if (isset($_SERVER[$server])) {
+          $ip = filter_var($_SERVER[$server], FILTER_VALIDATE_IP);
+          break;
         }
-        return $ip;
+      }
+      return $ip;
     }
 
     function time_lapse($date1, $date2, $return_as_array = false) {
@@ -488,6 +494,76 @@ class pepatung {
 
     function string_time($var) {
         return strtotime(str_replace('/', '-',$var));
+    }
+
+    function auth($create_auth = true) {
+
+        if ($create_auth && !is_array($create_auth)) {
+
+            // create session
+            if ($auth_key = $this->session('fetchSession', 'auth_key')) {
+                $decode = json_decode(base64_decode($auth_key));
+                if (is_object($decode)) {
+                    return $decode;
+
+                } else {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+
+        } elseif ($create_auth && is_array($create_auth)) {
+            $new_auth = array('created' => time(), 'auth' => $create_auth);
+            $auth_key = base64_encode(json_encode($new_auth));
+            $this->session('createSession', 'auth_key', $auth_key);
+
+            return true;
+
+        } elseif (!$create_auth) {
+            if ($auth_key = $this->session('fetchSession', 'auth_key')) {
+                if ($this->session('destroySession', 'auth_key')) {
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    function curl_crawl($url, $array = '', $referer = false, $user_agent = false, $http_headers = false, $json = false) {
+
+        $crawl_timeout = ((DEBUG_MODE == 0) ? 5 : 30);
+
+        $ch = curl_init($url);
+
+        if (is_array($array)) {
+            curl_setopt($ch, CURLOPT_POST      ,1);
+            if ($json == false) {
+                curl_setopt($ch, CURLOPT_POSTFIELDS    ,http_build_query($array, NULL, '&'));
+            } else {
+                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($array));
+            }
+        }
+
+        if ($http_headers) {
+            curl_setopt( $ch, CURLOPT_HTTPHEADER, $http_headers);
+        }
+
+        if ($referer) curl_setopt($ch, CURLOPT_REFERER, $referer);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION  ,1);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $crawl_timeout); 
+        curl_setopt($ch, CURLOPT_TIMEOUT, $crawl_timeout); //timeout in seconds
+        curl_setopt($ch, CURLOPT_HEADER      ,0);  // DO NOT RETURN HTTP HEADERS
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER  ,1);  // RETURN THE CONTENTS OF THE CALL
+        if ($user_agent = true) curl_setopt($ch,CURLOPT_USERAGENT,'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.13) Gecko/20080311 Firefox/2.0.0.13');
+        $html = curl_exec($ch);
+        return $html;
     }
 }
 ?>
