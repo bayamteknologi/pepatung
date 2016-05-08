@@ -140,6 +140,17 @@ class pepatung {
                     return false;
                 }
             }
+			
+		} elseif ($dbengine == "pgsql") {
+
+          try {
+            $db = new PDO('pgsql:host='.$host.';port='.$port.';user='.$username.';password='.$password.';dbname='.$dbname.'');
+				return $db;
+			} catch(PDOException $db) {
+				$this->throwError("CRITICAL","Cannot connect to database using credentials provided. (Using PDO)");
+				return false;
+			}
+		
         } else {
             $this->throwError("CRITICAL","Database engine not supported.");
             return false;
